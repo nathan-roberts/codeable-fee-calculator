@@ -2,6 +2,9 @@
 
 Welcome to the Codeable Fee Calculator! This application helps you calculate service fees and determine the total amount billed to clients, including the effect of different exchange rates.
 
+## Preview
+<iframe src="https://www.youtube.com/watch?v=4JFzZ4QUjlY" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
 ## Live Demo
 
 You can try out the application [here](https://codeable-fee-calculator.pages.dev/).
