@@ -14,22 +14,22 @@ document.querySelectorAll('.service-fee-btn').forEach(button => {
 });
 
 async function fetchExchangeRates() {
-  const lastUpdated = getCookie('lastUpdated');
+  const lastUpdated = window.localStorage.getItem('lastUpdated');
   const now = new Date().getTime();
   const oneDay = 24 * 60 * 60 * 1000;
 
   if (!lastUpdated || now - lastUpdated > oneDay) {
-    const response = await fetch('https://v6.exchangerate-api.com/v6/' + getCookie('apiKey') + '/latest/USD');
+    const response = await fetch('https://v6.exchangerate-api.com/v6/' + window.localStorage.getItem('apiKey') + '/latest/USD');
     const data = await response.json();
     const rates = data.conversion_rates;
 
-    setCookie('rates', JSON.stringify(rates), 1);
-    setCookie('lastUpdated', now, 1);
+    window.localStorage.setItem('rates', JSON.stringify(rates));
+    window.localStorage.setItem('lastUpdated', now);
     showNotification();
 
     populateRates(rates);
   } else {
-    const rates = JSON.parse(getCookie('rates'));
+    const rates = JSON.parse(window.localStorage.getItem('rates'));
     populateRates(rates);
   }
 }
@@ -46,7 +46,7 @@ function populateRates(rates) {
     baseRateDropdown.appendChild(option);
   }
 
-  const savedCurrency = getCookie('baseCurrency');
+  const savedCurrency = window.localStorage.getItem('baseCurrency');
   if (savedCurrency) {
     for (let i = 0; i < baseRateDropdown.options.length; i++) {
       if (baseRateDropdown.options[i].text === savedCurrency) {
@@ -62,7 +62,7 @@ function handleCurrencyChange() {
   const baseRateDropdown = document.getElementById('baseRate');
   const selectedOption = baseRateDropdown.options[baseRateDropdown.selectedIndex];
   const baseCurrency = selectedOption.text;
-  setCookie('baseCurrency', baseCurrency, 30);
+  window.localStorage.setItem('baseCurrency', baseCurrency);
   calculate();
   // focus input #takehome
 
@@ -82,7 +82,7 @@ function calculate() {
   const baseRate = parseFloat(document.getElementById('baseRate').value);
 
   if (isNaN(takehome) || takehome <= 0 || isNaN(baseRate)) {
-    document.getElementById('result').innerText = 'Please enter a valid takehome amount.';
+    // document.getElementById('result').innerText = 'Please enter a valid takehome amount.';
     return;
   }
 
@@ -102,26 +102,8 @@ function showNotification() {
   }, 3000);
 }
 
-function setCookie(name, value, days) {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  const expires = "expires=" + date.toUTCString();
-  document.cookie = name + "=" + value + ";" + expires + ";path=/";
-}
-
-function getCookie(name) {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(';');
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
 window.onload = function () {
-  const apiKey = getCookie('apiKey');
+  const apiKey = window.localStorage.getItem('apiKey');
   if (apiKey) {
     document.getElementById('api-key-container').classList.add('hidden');
     document.getElementById('calculator-container').classList.remove('hidden');
@@ -146,13 +128,15 @@ window.onload = function () {
     defaultFeeBtn.classList.add('bg-indigo-600', 'text-white');
     defaultFeeBtn.classList.remove('bg-white', 'text-gray-900');
   }
+  
   calculate();
 };
 
 // Add event listener to save API key and show calculator
 document.getElementById('save-api-key').addEventListener('click', function () {
   const apiKey = document.getElementById('api-key').value;
-  setCookie('apiKey', apiKey, 30);
+  window.localStorage.setItem('apiKey', apiKey);
+  
   document.getElementById('api-key-container').classList.add('hidden');
   document.getElementById('calculator-container').classList.remove('hidden');
   fetchExchangeRates();
