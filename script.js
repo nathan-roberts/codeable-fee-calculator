@@ -39,7 +39,6 @@ function populateRates(rates) {
   baseRateDropdown.innerHTML = '';
 
   for (const currency in rates) {
-    if (currency === 'USD') continue; // Skip USD as it is the base currency
     const option = document.createElement('option');
     option.value = rates[currency];
     option.text = currency;
