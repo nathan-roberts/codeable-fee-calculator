@@ -4,119 +4,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Service Fee Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f0f0f0;
-    }
-
-    .calculator {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .calculator input,
-    .calculator select {
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-    }
-
-    .calculator input[type="number"] {
-      width: calc(100% - 22px);
-    }
-
-    .calculator .radio-group {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .calculator .radio-group label {
-      flex: 1;
-      margin: 0 5px;
-    }
-
-    .result {
-      margin-top: 10px;
-    }
-  </style>
+  <title>Codeable Fee Calculator</title>
+  <!-- Tailwind CSS CDN -->
+  <link href="./src/output.css" rel="stylesheet">
+  <script src="https://unpkg.com/@heroicons/react/24/outline/copy.svg"></script>
 </head>
 
-<body>
-  <div class="calculator">
-    <h2>Service Fee Calculator</h2>
-    <label for="serviceFee">Service Fee (%)</label>
-    <div id="serviceFee" class="radio-group">
-      <label><input type="radio" name="serviceFee" value="17.5" checked> 17.5%</label>
-      <label><input type="radio" name="serviceFee" value="15"> 15%</label>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+
+
+
+  <div class="flex-col items-center hidden w-full max-w-md p-8 bg-white rounded-lg shadow-lg " id="api-key-container">
+    <div
+      class="flex flex-col items-center justify-center gap-2 p-4 mb-4 border-4 rounded-md border-gray-500/50 dark:text-gray-700">
+      <input type="text" id="api-key" placeholder="Enter API Key"
+        class="w-full p-2 mt-2 mb-4 text-3xl font-bold text-center bg-transparent border-none outline-none md:text-4xl">
+      <label for="api-key" class="block text-sm font-medium text-gray-700">
+        Enter API Key
+      </label>
+      <small><a href="https://www.exchangerate-api.com/" target="_blank" class="underline">Get a free API
+          key</a></small>
     </div>
-    <label for="baseRate">Base Rate (Currency)</label>
-    <select id="baseRate" onchange="calculate()">
-      <option value="1" data-symbol="£">GBP</option>
-    </select>
-    <label for="takehome">Takehome Amount (Base Currency)</label>
-    <input type="number" id="takehome" placeholder="Enter takehome amount" oninput="calculate()">
-    <div class="result" id="result"></div>
+    <button class="px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700" id="save-api-key">
+      Save API Key
+    </button>
   </div>
 
-  <script>
-    document.querySelectorAll('input[name="serviceFee"]').forEach(radio => {
-      radio.addEventListener('change', calculate);
-    });
+  <div class="hidden w-full max-w-md p-8 bg-white rounded-lg shadow-lg" id="calculator-container">
+    <h2 class="mb-6 text-2xl font-bold text-center">Codeable Fee Calculator</h2>
+    <label for="serviceFee" class="block text-sm font-medium text-gray-700">Service Fee (%)</label>
+    <div id="serviceFee" class="inline-flex mt-2 mb-4 rounded-md shadow-sm" role="group">
+      <button type="button"
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-gray-200 service-fee-btn rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 "
+        data-fee="17.5">17.5%</button>
 
-    async function fetchExchangeRates() {
-      const response = await fetch('https://v6.exchangerate-api.com/v6/8c7eb062202358c0efda4388/latest/USD');
-      const data = await response.json();
-      const rates = data.conversion_rates;
+      <button type="button"
+        class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 service-fee-btn rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 "
+        data-fee="15">15%</button>
+    </div>
 
-      const baseRateDropdown = document.getElementById('baseRate');
-      for (const currency in rates) {
-        if (currency === 'USD') continue; // Skip USD as it is the base currency
-        const option = document.createElement('option');
-        option.value = rates[currency];
-        option.text = currency;
-        option.setAttribute('data-symbol', getCurrencySymbol(currency));
-        baseRateDropdown.appendChild(option);
-      }
-    }
+    <div
+      class="flex flex-col items-center justify-center h-32 gap-2 p-4 py-4 mb-4 border-4 rounded-md dark:text-gray-700">
+      <div class="relative mt-2 rounded-md shadow-sm">
+        <!-- <div class="absolute inset-y-0 left-0 flex items-center hidden pl-3 pointer-events-none">
+          <span class="text-lg text-gray-500" id="currency-marker">$</span>
+        </div> -->
+        <input oninput="calculate()" type="text" name="takehome" id="takehome"
+          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-36 text-gray-900 text-4xl font-bold ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600  sm:leading-6 text-right "
+          placeholder="0.00">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <label for="baseRate" class="sr-only">Currency</label>
+          <select id="baseRate" onchange="handleCurrencyChange()" name="baseRate"
+            class="h-full py-0 pl-2 text-gray-500 bg-transparent border-0 rounded-md pr-7 focus:ring-2 focus:ring-inset focus:ring-indigo-600 ">
+          </select>
+        </div>
+      </div>
+      <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Take Home After Fees</label>
+    </div>
 
-    function getCurrencySymbol(currency) {
-      const symbols = {
-        USD: '$', EUR: '€', GBP: '£', // Add more symbols as needed
-        // Add symbols for other currencies if needed
-      };
-      return symbols[currency] || currency;
-    }
+    <div id="notification"
+      class="relative hidden px-4 py-3 mb-4 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
+      <strong class="font-bold">Currency rates updated!</strong>
+      <span class="block sm:inline">The exchange rates have been refreshed.</span>
+    </div>
+    <div
+      class="relative flex flex-col items-center justify-center h-32 gap-2 p-4 mb-4 transition-colors border-4 border-dashed rounded-md border-gray-500/50 dark:text-gray-700"
+      id="estimate-container">
 
-    function calculate() {
-      const serviceFee = parseFloat(document.querySelector('input[name="serviceFee"]:checked').value) / 100;
-      const takehome = parseFloat(document.getElementById('takehome').value);
-      const baseRate = parseFloat(document.getElementById('baseRate').value);
+      <!-- SVG Icon -->
+      <div class="absolute top-2 right-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z" />
+        </svg>
+      </div>
 
-      if (isNaN(takehome) || takehome <= 0 || isNaN(baseRate)) {
-        document.getElementById('result').innerText = 'Please enter a valid takehome amount.';
-        return;
-      }
+      <div class="flex items-center gap-2">
+        <span class="text-3xl font-bold md:text-4xl" id="estimate">
+          $$$
+        </span>
+      </div>
+      <span class="text-sm font-semibold text-center">Estimate</span>
+    </div>
 
-      const takehomeInUSD = takehome / baseRate;
-      const estimate = takehomeInUSD / 0.9;
-      const billedToClient = estimate * (1 + serviceFee);
+    <div
+      class="flex flex-col items-center justify-center h-32 gap-2 p-4 mb-4 border-4 border-dashed rounded-md border-gray-500/50 dark:text-gray-700">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl font-bold md:text-4xl" id="billed">
+          $$$
+        </span>
+      </div>
+      <span class="text-sm font-semibold text-center">Billed to Client</span>
+    </div>
+  </div>
 
-      document.getElementById('result').innerHTML = `
-                <p>Estimate: $${estimate.toFixed(2)}</p>
-                <p>Billed to Client: $${billedToClient.toFixed(2)}</p>
-            `;
-    }
-
-    fetchExchangeRates();
-  </script>
+  <!-- Link to the external JavaScript file -->
+  <script src="./script.js"></script>
 </body>
 
 </html>
