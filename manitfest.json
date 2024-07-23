@@ -1,0 +1,52 @@
+{
+  "name": "Codeable Fee Calculator",
+  "short_name": "Fee Calculator",
+  "theme_color": "#14404d",
+  "background_color": "#14404d",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "https://codeable-fee-calculator.pages.dev",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "arrow-down.webp",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "arrow-down.webp",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
