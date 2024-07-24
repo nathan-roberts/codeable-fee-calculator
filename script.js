@@ -19,7 +19,7 @@ async function fetchExchangeRates() {
   const oneDay = 24 * 60 * 60 * 1000;
 
   if (!lastUpdated || now - lastUpdated > oneDay) {
-    const response = await fetch('https://v6.exchangerate-api.com/v6/' + window.localStorage.getItem('apiKey') + '/latest/USD');
+    const response = await fetch('https://currency-rate-cache.codeaddicts.workers.dev/');
     const data = await response.json();
     const rates = data.conversion_rates;
 
@@ -36,6 +36,7 @@ async function fetchExchangeRates() {
 
 function populateRates(rates) {
   const baseRateDropdown = document.getElementById('baseRate');
+  
   baseRateDropdown.innerHTML = '';
 
   for (const currency in rates) {
@@ -103,10 +104,6 @@ function showNotification() {
 }
 
 window.onload = function () {
-  const apiKey = window.localStorage.getItem('apiKey');
-  if (apiKey) {
-    document.getElementById('api-key-container').classList.add('hidden');
-    document.getElementById('calculator-container').classList.remove('hidden');
     fetchExchangeRates();
     setTimeout(() => {
       const takehomeInput = document.getElementById('takehome');
@@ -117,30 +114,18 @@ window.onload = function () {
         console.log('#takehome not found');
       }
     }, 100);
-  } else {
-    document.getElementById('api-key-container').classList.remove('hidden');
-    document.getElementById('calculator-container').classList.add('hidden');
-  }
-
+  
   // Set default selected fee to 17.5%
   const defaultFeeBtn = document.querySelector('.service-fee-btn[data-fee="17.5"]');
   if (defaultFeeBtn) {
     defaultFeeBtn.classList.add('bg-indigo-600', 'text-white');
     defaultFeeBtn.classList.remove('bg-white', 'text-gray-900');
-  }
+  }  
   
   calculate();
 };
 
-// Add event listener to save API key and show calculator
-document.getElementById('save-api-key').addEventListener('click', function () {
-  const apiKey = document.getElementById('api-key').value;
-  window.localStorage.setItem('apiKey', apiKey);
-  
-  document.getElementById('api-key-container').classList.add('hidden');
-  document.getElementById('calculator-container').classList.remove('hidden');
-  fetchExchangeRates();
-});
+
 
 // Add event listener to copy estimate to clipboard
 document.getElementById('estimate-container').addEventListener('click', function () {

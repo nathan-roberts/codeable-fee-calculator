@@ -22,31 +22,13 @@
 
 <body class="flex items-center justify-center h-screen bg-gray-100">
 
-
-
-  <div class="flex-col items-center hidden w-full max-w-md p-8 bg-white rounded-lg shadow-lg " id="api-key-container">
-    <div
-      class="flex flex-col items-center justify-center gap-2 p-4 mb-4 border-4 rounded-md border-gray-500/50 dark:text-gray-700">
-      <input type="text" id="api-key" placeholder="Enter API Key"
-        class="w-full p-2 mt-2 mb-4 text-3xl font-bold text-center bg-transparent border-none outline-none md:text-4xl">
-      <label for="api-key" class="block text-sm font-medium text-gray-700">
-        Enter API Key
-      </label>
-      <small><a href="https://www.exchangerate-api.com/" target="_blank" class="underline">Get a free API
-          key</a></small>
-    </div>
-    <button class="px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700" id="save-api-key">
-      Save API Key
-    </button>
-  </div>
-
-  <div class="hidden w-full max-w-md p-8 bg-white rounded-lg shadow-lg" id="calculator-container">
+  <div class="block w-full max-w-md p-8 bg-white rounded-lg shadow-lg" id="calculator-container">
     <h2 class="mb-6 text-2xl font-bold text-center">Codeable Fee Calculator</h2>
     <div class="flex flex-col items-center ">
       <label for="serviceFee" class="block text-sm font-medium text-gray-700">Service Fee (%)</label>
       <div id="serviceFee" class="inline-flex mt-2 mb-4 rounded-md shadow-sm" role="group">
         <button type="button"
-          class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-gray-200 service-fee-btn rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 "
+          class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border-gray-200 service-fee-btn rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 "
           data-fee="17.5">17.5%</button>
 
         <button type="button"
@@ -55,7 +37,7 @@
       </div>
     </div>
     <div
-      class="flex flex-col items-center justify-center h-32 gap-2 p-4 py-4 mb-4 border-4 rounded-md dark:text-gray-700">
+      class="flex flex-col items-center justify-center h-32 gap-2 p-4 py-4 mb-4 rounded-md dark:text-gray-700">
       <div class="relative mt-2 rounded-md shadow-sm">
         <!-- <div class="absolute inset-y-0 left-0 flex items-center hidden pl-3 pointer-events-none">
           <span class="text-lg text-gray-500" id="currency-marker">$</span>
