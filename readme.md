@@ -63,4 +63,6 @@ npx tailwindcss -i ./src/input.css -o ./src/output.css --watch
 4.	Select Currency: Choose the base currency from the dropdown.
 5.	View Results: The application will display the estimated amount and the total billed to the client.
 
-Built with ❤️ by Nathan Roberts.
+Contributors
+
+Built with ❤️ by Nathan Roberts
