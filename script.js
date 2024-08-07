@@ -36,7 +36,7 @@ async function fetchExchangeRates() {
 
 function populateRates(rates) {
   const baseRateDropdown = document.getElementById('baseRate');
-  
+
   baseRateDropdown.innerHTML = '';
 
   for (const currency in rates) {
@@ -89,10 +89,12 @@ function calculate() {
 
   const takehomeInUSD = takehome / baseRate;
   const estimate = takehomeInUSD / 0.9;
+  const feeInUSD = estimate * serviceFee;
   const billedToClient = estimate * (1 + serviceFee);
 
   document.getElementById('estimate').innerHTML = `$${estimate.toFixed(2)}`;
   document.getElementById('billed').innerHTML = `$${billedToClient.toFixed(2)}`;
+  document.getElementById('fee').innerHTML = `$${feeInUSD.toFixed(2)}`;
 }
 
 function showNotification() {
@@ -104,57 +106,62 @@ function showNotification() {
 }
 
 window.onload = function () {
-    fetchExchangeRates();
-    setTimeout(() => {
-      const takehomeInput = document.getElementById('takehome');
-      console.log('Setting focus to #takehome', takehomeInput);
-      if (takehomeInput) {
-        takehomeInput.focus();
-      } else {
-        console.log('#takehome not found');
-      }
-    }, 100);
-  
+  fetchExchangeRates();
+  setTimeout(() => {
+    const takehomeInput = document.getElementById('takehome');
+    console.log('Setting focus to #takehome', takehomeInput);
+    if (takehomeInput) {
+      takehomeInput.focus();
+    } else {
+      console.log('#takehome not found');
+    }
+  }, 100);
+
   // Set default selected fee to 17.5%
   const defaultFeeBtn = document.querySelector('.service-fee-btn[data-fee="17.5"]');
   if (defaultFeeBtn) {
     defaultFeeBtn.classList.add('bg-indigo-600', 'text-white');
     defaultFeeBtn.classList.remove('bg-white', 'text-gray-900');
-  }  
-  
+  }
+
   calculate();
 };
 
 
 
-// Add event listener to copy estimate to clipboard
-document.getElementById('estimate-container').addEventListener('click', function () {
-  const estimateElement = document.getElementById('estimate');
-  const estimateText = estimateElement.innerText;
+// Select all elements with the class 'click-to-copy'
+const clickToCopyElements = document.querySelectorAll('.click-to-copy');
 
-  // Remove the $ symbol to get only the numerical value
-  const numericValue = estimateText.replace(/^\$/, '');
+// Iterate over each element and add a click event listener
+clickToCopyElements.forEach(container => {
+  container.addEventListener('click', function () {
+    console.log('Clicked on the element');
 
-  // Check if the Clipboard API is supported
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+    // Get the first contained span element with the class 'value-field'
+    const valueContainer = this.querySelector('.value-field');
+
+    // Get the inner text of the span and remove any $ symbol to get only the numerical value
+    const estimateText = valueContainer.innerText;
+    const numericValue = estimateText.replace(/^\$/, '');
+
+    // Copy the value to the clipboard
     navigator.clipboard.writeText(numericValue).then(() => {
-      // Add the visual effects
-      const container = document.getElementById('estimate-container');
-      const originalText = estimateElement.innerText;
+      console.log('Copied to clipboard');
+
+      // Add visual effects to the container
+      const originalText = valueContainer.innerText;
 
       // Change border color and text color
-      container.classList.add('border-green-500', 'text-green-500');
-      estimateElement.innerHTML = '<span style="color:green">Copied</span>';
+      this.classList.add('border-green-500', 'text-green-500');
+      valueContainer.innerHTML = '<span style="color:green">Copied</span>';
 
       // Reset the styles and text after 2 seconds
       setTimeout(() => {
-        container.classList.remove('border-green-500', 'text-green-500');
-        estimateElement.innerText = originalText;
+        this.classList.remove('border-green-500', 'text-green-500');
+        valueContainer.innerText = originalText;
       }, 500);
     }).catch(err => {
       console.error('Could not copy text: ', err);
     });
-  } else {
-    console.error('Clipboard API is not supported in this browser');
-  }
+  });
 });
