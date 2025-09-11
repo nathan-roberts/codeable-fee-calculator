@@ -3,13 +3,30 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=https://feecalculator.nathanroberts.co.uk/">
-  <title>Redirecting...</title>
+  <title>Redirecting with Countdown</title>
+  <script>
+    let seconds = 3; // start at 3
+    function countdown() {
+      const counter = document.getElementById("count");
+      counter.textContent = seconds;
+
+      if (seconds === 0) {
+        // Redirect after countdown
+        window.location.href = "https://feecalculator.nathanroberts.co.uk/";
+      } else {
+        seconds--;
+        setTimeout(countdown, 1000);
+      }
+    }
+    window.onload = countdown;
+  </script>
 </head>
 
-<body>
-  <h1>This page has been moved</h1>
-  <p>If you are not redirected, <a href="https://feecalculator.nathanroberts.co.uk//">click here</a>.</p>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+  <h1 style="text-align: center;">
+    This page has been moved <br>
+    Redirecting in <span id="count">3</span>...
+  </h1>
 </body>
 
 </html>
