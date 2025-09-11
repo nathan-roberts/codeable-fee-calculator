@@ -14,23 +14,93 @@ document.querySelectorAll('.service-fee-btn').forEach(button => {
 });
 
 async function fetchExchangeRates() {
-  const lastUpdated = window.localStorage.getItem('lastUpdated');
-  const now = new Date().getTime();
-  const oneDay = 24 * 60 * 60 * 1000;
+  try {
+    // Log the current URL to help with debugging
+    console.log('Current URL:', window.location.href);
 
-  if (!lastUpdated || now - lastUpdated > oneDay) {
-    const response = await fetch('https://currency-rate-cache.codeaddicts.workers.dev/');
-    const data = await response.json();
+    // Try multiple possible paths for rates.json
+    const possiblePaths = [
+      '/rates/rates.json',
+    ];
+
+    let response = null;
+    let successPath = null;
+
+    // Try each path until one works
+    for (const path of possiblePaths) {
+      try {
+        console.log('Attempting to fetch from:', path);
+        response = await fetch(path, { method: 'GET', cache: 'no-store' });
+
+        if (response.ok) {
+          successPath = path;
+          console.log('Successfully fetched from:', path);
+          break;
+        }
+      } catch (pathError) {
+        console.log('Failed to fetch from:', path, pathError.message);
+      }
+    }
+
+    if (!response || !response.ok) {
+      throw new Error(`Could not fetch rates from any path`);
+    }
+
+    console.log('Parsing response from:', successPath);
+
+    // Get response text first to check if it's valid
+    const responseText = await response.text();
+    console.log('Response text:', responseText);
+
+    if (!responseText || responseText === 'undefined' || responseText === 'null' || responseText.trim() === '') {
+      throw new Error('Empty or invalid response received');
+    }
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}...`);
+    }
+
+    console.log('Response data:', data);
+
     const rates = data.conversion_rates;
 
-    window.localStorage.setItem('rates', JSON.stringify(rates));
-    window.localStorage.setItem('lastUpdated', now);
-    showNotification();
+    if (rates) {
+      console.log('Found conversion rates, storing in localStorage');
+      // Store in localStorage for potential offline use
+      window.localStorage.setItem('rates', JSON.stringify(rates));
+      window.localStorage.setItem('lastUpdated', new Date().getTime());
+      window.localStorage.setItem('successPath', successPath); // Store successful path for future use
+      showNotification();
 
-    populateRates(rates);
-  } else {
-    const rates = JSON.parse(window.localStorage.getItem('rates'));
-    populateRates(rates);
+      populateRates(rates);
+    } else {
+      throw new Error('No conversion rates found in the response');
+    }
+  } catch (error) {
+    console.error('Failed to fetch exchange rates:', error);
+
+    // Fallback to cached rates if available
+    const storedRates = window.localStorage.getItem('rates');
+    if (storedRates && storedRates !== 'undefined' && storedRates !== 'null') {
+      try {
+        console.log('Using cached rates from localStorage');
+        const rates = JSON.parse(storedRates);
+        if (rates) {
+          populateRates(rates);
+        } else {
+          console.error('Cached rates are invalid');
+        }
+      } catch (e) {
+        console.error('Failed to parse cached rates:', e);
+      }
+    } else {
+      // Handle the case where no rates are available
+      console.error('No cached rates available');
+    }
   }
 }
 

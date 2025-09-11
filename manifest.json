@@ -5,7 +5,7 @@
   "background_color": "#14404d",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "https://codeable-fee-calculator.pages.dev",
+  "scope": "/",
   "start_url": "/",
   "icons": [
     {
